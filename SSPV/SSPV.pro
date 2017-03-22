@@ -4,7 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
+QT       += network
+QT       += serialport
+QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,8 +16,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        siviso.cpp
+        siviso.cpp \
+    blanco.cpp \
+    ppi.cPp \
+    signal.cpp \
+    dbasepostgresql.cpp \
+    wconfig.cpp
 
-HEADERS  += siviso.h
+HEADERS  += siviso.h \
+    blanco.h \
+    ppi.h \
+    signal.h \
+    dbasepostgresql.h \
+    wconfig.h \
 
-FORMS    += siviso.ui
+FORMS    += siviso.ui \
+    wconfig.ui
+
+RESOURCES += \
+    resource.qrc
