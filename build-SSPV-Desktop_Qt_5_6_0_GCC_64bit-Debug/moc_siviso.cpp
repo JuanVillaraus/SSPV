@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SIVISO_t {
     QByteArrayData data[47];
-    char stringdata0[921];
+    char stringdata0[924];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -60,22 +60,22 @@ QT_MOC_LITERAL(27, 517, 26), // "on_setColorDw_valueChanged"
 QT_MOC_LITERAL(28, 544, 21), // "on_frecP_valueChanged"
 QT_MOC_LITERAL(29, 566, 18), // "on_nP_valueChanged"
 QT_MOC_LITERAL(30, 585, 22), // "on_anchoP_valueChanged"
-QT_MOC_LITERAL(31, 608, 10), // "habilitado"
-QT_MOC_LITERAL(32, 619, 13), // "on_cw_clicked"
-QT_MOC_LITERAL(33, 633, 19), // "on_startCom_clicked"
-QT_MOC_LITERAL(34, 653, 17), // "on_endCom_clicked"
-QT_MOC_LITERAL(35, 671, 18), // "on_sensor0_clicked"
-QT_MOC_LITERAL(36, 690, 18), // "on_sensor1_clicked"
-QT_MOC_LITERAL(37, 709, 19), // "on_openJars_clicked"
-QT_MOC_LITERAL(38, 729, 20), // "on_closeJars_clicked"
-QT_MOC_LITERAL(39, 750, 20), // "on_dial_valueChanged"
-QT_MOC_LITERAL(40, 771, 19), // "on_ang_valueChanged"
-QT_MOC_LITERAL(41, 791, 21), // "on_origenOmni_clicked"
-QT_MOC_LITERAL(42, 813, 23), // "on_origenManual_clicked"
-QT_MOC_LITERAL(43, 837, 22), // "on_dial_sliderReleased"
-QT_MOC_LITERAL(44, 860, 22), // "on_ang_editingFinished"
-QT_MOC_LITERAL(45, 883, 15), // "on_send_clicked"
-QT_MOC_LITERAL(46, 899, 21) // "on_infoSignal_clicked"
+QT_MOC_LITERAL(31, 608, 13), // "deshabilitado"
+QT_MOC_LITERAL(32, 622, 13), // "on_cw_clicked"
+QT_MOC_LITERAL(33, 636, 19), // "on_startCom_clicked"
+QT_MOC_LITERAL(34, 656, 17), // "on_endCom_clicked"
+QT_MOC_LITERAL(35, 674, 18), // "on_sensor0_clicked"
+QT_MOC_LITERAL(36, 693, 18), // "on_sensor1_clicked"
+QT_MOC_LITERAL(37, 712, 19), // "on_openJars_clicked"
+QT_MOC_LITERAL(38, 732, 20), // "on_closeJars_clicked"
+QT_MOC_LITERAL(39, 753, 20), // "on_dial_valueChanged"
+QT_MOC_LITERAL(40, 774, 19), // "on_ang_valueChanged"
+QT_MOC_LITERAL(41, 794, 21), // "on_origenOmni_clicked"
+QT_MOC_LITERAL(42, 816, 23), // "on_origenManual_clicked"
+QT_MOC_LITERAL(43, 840, 22), // "on_dial_sliderReleased"
+QT_MOC_LITERAL(44, 863, 22), // "on_ang_editingFinished"
+QT_MOC_LITERAL(45, 886, 15), // "on_send_clicked"
+QT_MOC_LITERAL(46, 902, 21) // "on_infoSignal_clicked"
 
     },
     "SIVISO\0leerSocket\0\0leerSerialUSB\0"
@@ -95,7 +95,7 @@ QT_MOC_LITERAL(46, 899, 21) // "on_infoSignal_clicked"
     "on_save_clicked\0on_setColorUp_valueChanged\0"
     "on_setColorDw_valueChanged\0"
     "on_frecP_valueChanged\0on_nP_valueChanged\0"
-    "on_anchoP_valueChanged\0habilitado\0"
+    "on_anchoP_valueChanged\0deshabilitado\0"
     "on_cw_clicked\0on_startCom_clicked\0"
     "on_endCom_clicked\0on_sensor0_clicked\0"
     "on_sensor1_clicked\0on_openJars_clicked\0"
@@ -246,7 +246,7 @@ void SIVISO::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 24: _t->on_frecP_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 25: _t->on_nP_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 26: _t->on_anchoP_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 27: _t->habilitado((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 27: _t->deshabilitado((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 28: _t->on_cw_clicked(); break;
         case 29: _t->on_startCom_clicked(); break;
         case 30: _t->on_endCom_clicked(); break;

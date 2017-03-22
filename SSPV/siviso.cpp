@@ -7,7 +7,7 @@
 #include <QtGui>
 
 //#define localdir QHostAddress("192.168.1.178")        //de donde nos comunicamos
-#define puertolocal 5002
+#define puertolocal 5003
 
 SIVISO::SIVISO(QWidget *parent) :
     QMainWindow(parent),
@@ -195,7 +195,7 @@ void SIVISO::leerSocket()
         } else if(info == "runREC"){
             puertoREC = senderPort;
         } else if(info == "PPI OK"){
-            habilitado(false);
+            deshabilitado(false);
         } else if(puertoSSF == senderPort){
              udpsocket->writeDatagram(info.toLatin1(),direccionApp,puertoBTR);
              udpsocket->writeDatagram(info.toLatin1(),direccionApp,puertoLF);
@@ -698,7 +698,7 @@ void SIVISO::on_anchoP_valueChanged(int arg1)
 
 void SIVISO::on_cw_clicked()
 {
-    habilitado(true);
+    deshabilitado(true);
     QString s;
     //serialPortUSB->write("RANGO 1\n");
     if(ui->origenManual->isChecked()){
@@ -840,7 +840,7 @@ void SIVISO::on_infoSignal_clicked()
     ui->view->appendPlainText("portPPI " + QString("%1").arg(puertoPPI));
 }
 
-void SIVISO::habilitado(bool value){
+void SIVISO::deshabilitado(bool value){
     ui->frecuencia->setDisabled(value);
     ui->bw->setDisabled(value);
     ui->it->setDisabled(value);
