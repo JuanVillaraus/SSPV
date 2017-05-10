@@ -461,27 +461,20 @@
         <height>41</height>
        </rect>
       </property>
+      <property name="minimum">
+       <number>5000</number>
+      </property>
       <property name="maximum">
-       <number>4096</number>
+       <number>16000</number>
+      </property>
+      <property name="singleStep">
+       <number>1000</number>
       </property>
      </widget>
      <widget class="QSpinBox" name="nP">
       <property name="geometry">
        <rect>
-        <x>210</x>
-        <y>40</y>
-        <width>91</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>65535</number>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="anchoP">
-      <property name="geometry">
-       <rect>
-        <x>320</x>
+        <x>207</x>
         <y>40</y>
         <width>91</width>
         <height>41</height>
@@ -491,13 +484,35 @@
        <number>1</number>
       </property>
       <property name="maximum">
-       <number>40</number>
+       <number>65535</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="anchoP">
+      <property name="geometry">
+       <rect>
+        <x>322</x>
+        <y>40</y>
+        <width>91</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>16</number>
+      </property>
+      <property name="singleStep">
+       <number>2</number>
+      </property>
+      <property name="displayIntegerBase">
+       <number>10</number>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="ran_det">
       <property name="geometry">
        <rect>
-        <x>430</x>
+        <x>432</x>
         <y>40</y>
         <width>91</width>
         <height>41</height>
@@ -555,7 +570,7 @@
      <widget class="QLabel" name="label_15">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>206</x>
         <y>20</y>
         <width>91</width>
         <height>17</height>
@@ -579,10 +594,10 @@
      <widget class="QLabel" name="label_16">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>306</x>
         <y>20</y>
-        <width>91</width>
-        <height>17</height>
+        <width>121</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="font">
@@ -594,7 +609,7 @@
        </font>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Ancho del Pulso&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Numero de Hidrofonos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
