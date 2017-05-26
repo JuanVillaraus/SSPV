@@ -52,9 +52,11 @@ SIVISO::SIVISO(QWidget *parent) :
     ui->origenOmni->setChecked(true);
     ui->dial->setDisabled(true);
     ui->ang->setVisible(false);
+    ui->nHidrof->setValue(mysignal->get_nHidrof());
+    ui->nHidrof->setDisabled(true);
+    ui->label_ang->setVisible(false);
     ui->frecP->setValue(mysignal->get_frecP());
     ui->nP->setValue(mysignal->get_nP());
-    ui->anchoP->setValue(mysignal->get_anchoP());
 
     bToolButton=false;
     ui->textTestGrap->setVisible(false);
@@ -71,6 +73,28 @@ SIVISO::SIVISO(QWidget *parent) :
     ui->infoSignal->setVisible(false);
 
     //serialPortUSB->write("GAIN 3\n");
+
+    ui->frecuencia->setDisabled(true);
+    ui->bw->setDisabled(true);
+    ui->it->setDisabled(true);
+    ui->dt->setDisabled(true);
+    ui->ran_det->setDisabled(true);
+    ui->tipo_norte->setDisabled(true);
+    ui->origenBuque->setDisabled(true);
+    ui->origenSensor->setDisabled(true);
+    ui->origenBlanco->setDisabled(true);
+    ui->origenAuto->setDisabled(true);
+    ui->rec->setDisabled(true);
+    ui->play->setDisabled(true);
+    ui->et_blancos->setDisabled(true);
+    ui->clas_blancos->setDisabled(true);
+    ui->edo_mar->setDisabled(true);
+    ui->radio_boya->setDisabled(true);
+    ui->prob_falsa->setDisabled(true);
+    ui->prob_deteccion->setDisabled(true);
+    ui->escala_ppi->setDisabled(true);
+    ui->escala_desp->setDisabled(true);
+
 
     QFile file1("resource/colorUp.txt");
     if(file1.open(QIODevice::WriteOnly)){
@@ -169,8 +193,8 @@ void SIVISO::leerSocket()
         quint16 senderPort;
         udpsocket->readDatagram(datagram.data(),datagram.size(), &sender, &senderPort);
         QString info = datagram.data();
-        ui->textTestGrap->appendPlainText(" port-> " + QString("%1").arg(senderPort));
-        ui->textTestGrap->appendPlainText(info);
+        ui->view->appendPlainText(" port-> " + QString("%1").arg(senderPort));
+        ui->view->appendPlainText(info);
         //s = " ";
 
         QString s;
@@ -275,7 +299,7 @@ void SIVISO::leerSerialUSB()
             tipoSensor = 9; //esta variable es para indicar que sensor se comunica, si activo "1" o pasivo "0", se inicializa en "9"
         }
         if(str[x]=='1'||str[x]=='2'||str[x]=='3'||str[x]=='4'||str[x]=='5'||str[x]=='6'||str[x]=='7'||str[x]=='8'||str[x]=='9'||str[x]=='0'||str[x]==','||str[x]==';'||str[x]=='.'||str[x]==':'||str[x]=='-'){
-            /*if(bSensor){
+            if(bSensor){
                 if(str[x]==','||str[x]==';'){
                     switch(nSensor){
                     case 0:
@@ -677,40 +701,49 @@ void SIVISO::on_setColorDw_valueChanged(int value)
 
 void SIVISO::on_frecP_valueChanged(int arg1)
 {
-    //serialPortUSB->write("SET CENTRAL FREQUENCY\n");
-    QString s = QString::number(arg1);
-    //serialPortUSB->write(s.toLatin1() + "\n");
+    mysignal->set_frecP(arg1);
 }
 
 void SIVISO::on_nP_valueChanged(int arg1)
 {
-    //serialPortUSB->write("SET N PULSOS\n");
-    QString s = QString::number(arg1);
-    //serialPortUSB->write(s.toLatin1() + "\n");
+    mysignal->set_nP(arg1);
 }
 
-void SIVISO::on_anchoP_valueChanged(int arg1)
+void SIVISO::on_nHidrof_valueChanged(int arg1)
 {
-    //serialPortUSB->write("SET ANCHO PULSO\n");
-    QString s = QString::number(arg1);
-    //serialPortUSB->write(s.toLatin1() + "\n");
+    if(arg1 == 16)
+    {
+        ui->origenOmni->setChecked(true);
+        ui->nHidrof->setDisabled(true);
+        ui->dial->setDisabled(true);
+        ui->ang->setVisible(false);
+        ui->label_ang->setVisible(false);
+        ui->nHidrof->setValue(16);
+    }
+    if((arg1%2)==0 && arg1!=16)
+    {
+        ui->nHidrof->setValue(arg1-1);
+        mysignal->set_nHidrof(arg1-1);
+    } else {
+        mysignal->set_nHidrof(arg1);
+    }
+
 }
 
 void SIVISO::on_cw_clicked()
 {
     deshabilitado(true);
     QString s;
-    //serialPortUSB->write("RANGO 1\n");
-    if(ui->origenManual->isChecked()){
-        //serialPortUSB->write("SET ANGLE A\n");
-        int n = ui->ang->value();
-        if(n<0)
-            n+=360;
-        s = QString::number(n);
-        //serialPortUSB->write(s.toLatin1() + "\n");
-    }
-    //serialPortUSB->write("ENCENDER\n");
-    s = "PULSO";
+    s = "OFF";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
+    s = "ON";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
+    compGraf="PPI";
+    s = "RP";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
+    s = mysignal->datosPulso();
+    ui->view->appendPlainText(s);
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
 }
 
@@ -779,6 +812,10 @@ void SIVISO::on_origenOmni_clicked()
     //serialPortUSB->write("5 \n");
     ui->ang->setVisible(false);
     ui->dial->setDisabled(true);
+    ui->nHidrof->setDisabled(true);
+    ui->nHidrof->setValue(16);
+    ui->label_ang->setVisible(false);
+
 }
 
 void SIVISO::on_origenManual_clicked()
@@ -787,6 +824,9 @@ void SIVISO::on_origenManual_clicked()
     //serialPortUSB->write("0 \n");
     ui->ang->setVisible(true);
     ui->dial->setDisabled(false);
+    ui->nHidrof->setDisabled(false);
+    ui->nHidrof->setValue(15);
+    ui->label_ang->setVisible(true);
 }
 
 void SIVISO::on_dial_sliderReleased()
@@ -848,7 +888,6 @@ void SIVISO::deshabilitado(bool value){
     ui->cw->setDisabled(value);
     ui->frecP->setDisabled(value);
     ui->nP->setDisabled(value);
-    ui->anchoP->setDisabled(value);
     ui->ran_det->setDisabled(value);
     ui->tipo_norte->setDisabled(value);
     ui->origenBuque->setDisabled(value);
@@ -861,8 +900,6 @@ void SIVISO::deshabilitado(bool value){
     ui->dial->setDisabled(value);
     ui->rec->setDisabled(value);
     ui->play->setDisabled(value);
-    ui->vol_dw->setDisabled(value);
-    ui->vol_up->setDisabled(value);
     ui->et_blancos->setDisabled(value);
     ui->clas_blancos->setDisabled(value);
     ui->edo_mar->setDisabled(value);
@@ -876,4 +913,16 @@ void SIVISO::deshabilitado(bool value){
     ui->lf->setDisabled(value);
     ui->btr->setDisabled(value);
     ui->ppi->setDisabled(value);
+}
+
+
+void SIVISO::on_vol_dw_clicked()
+{
+    proceso3->startDetached("amixer sset Master 5%-");
+}
+
+
+void SIVISO::on_vol_up_clicked()
+{
+    proceso3->startDetached("amixer sset Master 5%+");
 }

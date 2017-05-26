@@ -118,7 +118,7 @@ private slots:
 
     void on_nP_valueChanged(int arg1);
 
-    void on_anchoP_valueChanged(int arg1);
+    void on_nHidrof_valueChanged(int arg1);
 
     void deshabilitado(bool value);
 
@@ -152,6 +152,10 @@ private slots:
 
     void on_infoSignal_clicked();
 
+    void on_vol_dw_clicked();
+
+    void on_vol_up_clicked();
+
 private:
     Ui::siviso *ui;
 
@@ -168,6 +172,7 @@ private:
     QProcess *proceso1;
     QProcess *proceso2;
     QProcess *proceso3;
+    QProcess *proceso5;
 
     // For use the class dbasepostgresql by Misael M Del Valle
     DBasePostgreSQL* myDB;

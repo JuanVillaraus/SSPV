@@ -6,9 +6,11 @@ Signal::Signal()
     bw = 7.2;
     it = 5;
     dt = 9;
-    frecP = 2000;
-    nP = 10;
-    anchoP = 25;
+    frecP = 5000;   //Frecuencia de emisión del Pulso
+    nP = 10;        //Número de pulsos
+    nHidrof = 16;   //Número de Hidrofonos
+    MarDes = 360;   //Marcación Deseada
+    anchoP = 25;    //Ancho del Pulso
     rangoDetec = 0;
     ganancia_sensor = 3;
     prob_falsa = 0.3;
@@ -70,6 +72,16 @@ void Signal::set_frecP(int frecP)
 void Signal::set_nP(int nP)
 {
     this->nP = nP;
+}
+
+void Signal::set_nHidrof(int nHidrof)
+{
+    this->nHidrof = nHidrof;
+}
+
+void Signal::set_MarDes(int MarDes)
+{
+    this->MarDes = MarDes;
 }
 
 void Signal::set_anchoP(int anchoP)
@@ -145,9 +157,27 @@ QString Signal::get_info_signal()
     s += QString::number(get_frecP());
     s += "; nP= ";
     s += QString::number(get_nP());
+    s += "; nHidrof= ";
+    s += QString::number(get_nHidrof());
+    s += "; MarDes= ";
+    s += QString::number(get_MarDes());
     s += "; anchoP= ";
     s += QString::number(get_anchoP());
     s += ";";
+    return s;
+}
+
+QString Signal::datosPulso()
+{
+    QString s;
+    s = "ConfPulsTx ";
+    s += QString::number(get_MarDes());
+    s += ",";
+    s += QString::number(get_frecP());
+    s += ",";
+    s += QString::number(get_nHidrof());
+    s += ",";
+    s += QString::number(get_nP());
     return s;
 }
 
@@ -244,6 +274,16 @@ int Signal::get_frecP()
 int Signal::get_nP()
 {
     return nP;
+}
+
+int Signal::get_nHidrof()
+{
+    return nHidrof;
+}
+
+int Signal::get_MarDes()
+{
+    return MarDes;
 }
 
 int Signal::get_anchoP()

@@ -11,6 +11,8 @@ private:
     int dt;
     int frecP;
     int nP;
+    int nHidrof;
+    int MarDes;
     int anchoP;
     int rangoDetec;
     int ganancia_sensor;
@@ -33,6 +35,8 @@ public:
     void set_info_signal(QString info);
     void set_frecP(int frecP);
     void set_nP(int nP);
+    void set_nHidrof(int nHidrof);
+    void set_MarDes(int MarDes);
     void set_anchoP(int anchoP);
     void receive_of_sensor(QString message);
 
@@ -46,8 +50,11 @@ public:
     int get_edo_mar();
     QString get_info_signal();
     QString send_to_sensor();
+    QString datosPulso();
     int get_frecP();
     int get_nP();
+    int get_nHidrof();
+    int get_MarDes();
     int get_anchoP();
 };
 
