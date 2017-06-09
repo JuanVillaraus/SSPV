@@ -89,7 +89,6 @@ SIVISO::SIVISO(QWidget *parent) :
     ui->et_blancos->setDisabled(true);
     ui->clas_blancos->setDisabled(true);
     ui->edo_mar->setDisabled(true);
-    ui->radio_boya->setDisabled(true);
     ui->prob_falsa->setDisabled(true);
     ui->prob_deteccion->setDisabled(true);
     ui->escala_ppi->setDisabled(true);
@@ -205,6 +204,8 @@ void SIVISO::leerSocket()
             s = "OFF";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
         } else if(info == "runBTR"){
+            s = "EXIT";
+            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);//-----------------------------------------------------------Continuar aqui
             puertoBTR = senderPort;
             s = "LONG";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
@@ -903,7 +904,6 @@ void SIVISO::deshabilitado(bool value){
     ui->et_blancos->setDisabled(value);
     ui->clas_blancos->setDisabled(value);
     ui->edo_mar->setDisabled(value);
-    ui->radio_boya->setDisabled(value);
     ui->prob_falsa->setDisabled(value);
     ui->prob_deteccion->setDisabled(value);
     ui->escala_ppi->setDisabled(value);

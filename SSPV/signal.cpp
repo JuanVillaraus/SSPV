@@ -5,7 +5,7 @@ Signal::Signal()
     frec = 83;
     bw = 7.2;
     it = 5;
-    dt = 9;
+    dt = 1.66;
     frecP = 5000;   //Frecuencia de emisión del Pulso
     nP = 10;        //Número de pulsos
     nHidrof = 16;   //Número de Hidrofonos
