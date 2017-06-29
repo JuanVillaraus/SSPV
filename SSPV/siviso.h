@@ -167,6 +167,7 @@ private:
     quint16 puertoBTR;
     quint16 puertoLF;
     quint16 puertoREC;
+    quint16 puertoComPV;
     QSerialPort *serialPortDB9;
     QSerialPort *serialPortUSB;
     QProcess *proceso1;

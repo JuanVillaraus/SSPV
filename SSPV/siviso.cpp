@@ -116,7 +116,7 @@ SIVISO::SIVISO(QWidget *parent) :
     proceso1->startDetached("java -jar Lofar.jar");
     proceso2->startDetached("java -jar BTR.jar");
     proceso3->startDetached("java -jar PPI.jar");
-
+    proceso5->startDetached("java -jar ConexionPV.jar");
 
 
 //This use for TEST the class DBasePostgreSQL by Misael M Del Valle -- Status: Functional
@@ -137,6 +137,7 @@ SIVISO::~SIVISO()
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
 
     /*serialPortUSB->write("END COMMUNICATION\n");
     serialPortDB9->close();
@@ -147,6 +148,7 @@ SIVISO::~SIVISO()
     proceso1->close();
     proceso2->close();
     proceso3->close();
+    proceso5->close();
 }
 
 void SIVISO::changeStyleSheet(int iStyle)
@@ -217,6 +219,10 @@ void SIVISO::leerSocket()
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
             s = "OFF";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
+        } else if(info == "runConxPV"){
+            //s = "EXIT";
+            //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
+            puertoComPV = senderPort;
         } else if(info == "runREC"){
             puertoREC = senderPort;
         } else if(info == "PPI OK"){
@@ -462,8 +468,8 @@ void SIVISO::on_btr_clicked()
     s = "ON";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
     compGraf="BTR";
-    s = "RP";
-    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
+    //s = "RP";
+    //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
 }
 
 
@@ -789,6 +795,7 @@ void SIVISO::on_openJars_clicked()
     proceso1->startDetached("java -jar Lofar.jar");
     proceso2->startDetached("java -jar BTR.jar");
     proceso3->startDetached("java -jar PPI.jar");
+    //proceso5->startDetached("java -jar ConexionPV.jar");
 }
 
 
@@ -816,6 +823,9 @@ void SIVISO::on_origenOmni_clicked()
     ui->nHidrof->setDisabled(true);
     ui->nHidrof->setValue(16);
     ui->label_ang->setVisible(false);
+    QString s;
+    s = "M_OFF";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
 
 }
 
@@ -828,6 +838,9 @@ void SIVISO::on_origenManual_clicked()
     ui->nHidrof->setDisabled(false);
     ui->nHidrof->setValue(15);
     ui->label_ang->setVisible(true);
+    QString s;
+    s = "M_ON";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
 }
 
 void SIVISO::on_dial_sliderReleased()
@@ -838,6 +851,21 @@ void SIVISO::on_dial_sliderReleased()
     QString s = QString::number(n);
     //serialPortUSB->write(s.toLatin1() + "\n");
     ui->textTestGrap->appendPlainText(s);
+
+    QFile file("resource/marcacion.txt");
+    if(file.open(QIODevice::WriteOnly)){
+        QTextStream stream(&file);
+        int value = ui->ang->value();
+        if(value<0){
+            value += 360;
+        }
+        stream<<value;
+    } else {
+        qDebug();
+    }
+    file.close();
+    s = "RP";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
 }
 
 void SIVISO::on_ang_editingFinished()
@@ -848,6 +876,25 @@ void SIVISO::on_ang_editingFinished()
     QString s = QString::number(n);
     //serialPortUSB->write(s.toLatin1() + "\n");
     ui->textTestGrap->appendPlainText(s);
+
+    QFile file("resource/marcacion.txt");
+    if(file.open(QIODevice::WriteOnly)){
+        QTextStream stream(&file);
+        int value = ui->ang->value();
+        /*if ((value%4.5)!=0)
+        {
+            value = value-(value%4.5);
+        }*/
+        if(value<0){
+            value += 360;
+        }
+        stream<<value;
+    } else {
+        qDebug();
+    }
+    file.close();
+    s = "RP";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
 }
 
 void SIVISO::on_send_clicked()
