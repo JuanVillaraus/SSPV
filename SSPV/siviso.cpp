@@ -113,10 +113,16 @@ SIVISO::SIVISO(QWidget *parent) :
     }
     file2.close();
 
-    proceso1->startDetached("java -jar Lofar.jar");
-    proceso2->startDetached("java -jar BTR.jar");
-    proceso3->startDetached("java -jar PPI.jar");
+    thread()->sleep(1);
     proceso5->startDetached("java -jar ConexionPV.jar");
+    thread()->sleep(1);
+    proceso1->startDetached("java -jar Lofar.jar");
+    thread()->sleep(1);
+    proceso2->startDetached("java -jar BTR.jar");
+    thread()->sleep(1);
+    proceso3->startDetached("java -jar PPI.jar");
+    thread()->sleep(1);
+
 
 
 //This use for TEST the class DBasePostgreSQL by Misael M Del Valle -- Status: Functional
