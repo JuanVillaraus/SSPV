@@ -646,6 +646,16 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Rango de &lt;br/&gt;detección&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
+     <zorder>frecP</zorder>
+     <zorder>nP</zorder>
+     <zorder>nHidrof</zorder>
+     <zorder>ran_det</zorder>
+     <zorder>label_13</zorder>
+     <zorder>label_14</zorder>
+     <zorder>label_15</zorder>
+     <zorder>label_16</zorder>
+     <zorder>label_17</zorder>
+     <zorder>cw</zorder>
     </widget>
     <widget class="QPushButton" name="tipo_norte">
      <property name="geometry">
@@ -1062,7 +1072,7 @@ Verdadero</string>
       </rect>
      </property>
      <property name="text">
-      <string>Elazar</string>
+      <string>Enlazar</string>
      </property>
     </widget>
     <widget class="QPushButton" name="lf">

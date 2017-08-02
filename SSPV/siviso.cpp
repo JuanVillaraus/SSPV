@@ -113,7 +113,7 @@ SIVISO::SIVISO(QWidget *parent) :
     }
     file2.close();
 
-    thread()->sleep(1);
+    /*thread()->sleep(1);
     proceso5->startDetached("java -jar ConexionPV.jar");
     thread()->sleep(1);
     proceso1->startDetached("java -jar Lofar.jar");
@@ -121,7 +121,7 @@ SIVISO::SIVISO(QWidget *parent) :
     proceso2->startDetached("java -jar BTR.jar");
     thread()->sleep(1);
     proceso3->startDetached("java -jar PPI.jar");
-    thread()->sleep(1);
+    thread()->sleep(1);*/
 
 
 
@@ -755,8 +755,9 @@ void SIVISO::on_cw_clicked()
     compGraf="PPI";
     s = "RP";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
-    s = mysignal->datosPulso();
-    ui->view->appendPlainText(s);
+    //s = mysignal->datosPulso();
+    //ui->view->appendPlainText(s);
+    s = "PULSO";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
 }
 
@@ -807,6 +808,10 @@ void SIVISO::on_openJars_clicked()
 
 void SIVISO::on_dial_valueChanged(int value)
 {
+    /*if((value*4.5)!=0){
+        value-=(value%4.5);
+        ui->dial->setValue(value);
+    }*/
     ui->ang->setValue(value);
 }
 

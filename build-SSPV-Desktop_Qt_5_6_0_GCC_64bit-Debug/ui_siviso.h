@@ -334,6 +334,16 @@ public:
         label_17->setObjectName(QStringLiteral("label_17"));
         label_17->setGeometry(QRect(430, 10, 91, 31));
         label_17->setFont(font);
+        frecP->raise();
+        nP->raise();
+        nHidrof->raise();
+        ran_det->raise();
+        label_13->raise();
+        label_14->raise();
+        label_15->raise();
+        label_16->raise();
+        label_17->raise();
+        cw->raise();
         tipo_norte = new QPushButton(BarraHerramientas);
         tipo_norte->setObjectName(QStringLiteral("tipo_norte"));
         tipo_norte->setGeometry(QRect(1080, 56, 99, 51));
@@ -734,7 +744,7 @@ public:
         origenManual->setText(QApplication::translate("siviso", "Manual", 0));
         origenAuto->setText(QApplication::translate("siviso", "Automatico", 0));
         origenOmni->setText(QApplication::translate("siviso", "Omnidireccional", 0));
-        btOpenPort->setText(QApplication::translate("siviso", "Elazar", 0));
+        btOpenPort->setText(QApplication::translate("siviso", "Enlazar", 0));
         lf->setText(QApplication::translate("siviso", "LF", 0));
         btr->setText(QApplication::translate("siviso", "BTR", 0));
         ppi->setText(QApplication::translate("siviso", "PPI", 0));
