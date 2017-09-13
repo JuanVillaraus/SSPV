@@ -453,8 +453,8 @@ public:
         gan_sen = new QSpinBox(BarraHerramientas);
         gan_sen->setObjectName(QStringLiteral("gan_sen"));
         gan_sen->setGeometry(QRect(1092, 161, 61, 41));
-        gan_sen->setMinimum(3);
-        gan_sen->setMaximum(40);
+        gan_sen->setMinimum(2);
+        gan_sen->setMaximum(62);
         ang = new QDoubleSpinBox(BarraHerramientas);
         ang->setObjectName(QStringLiteral("ang"));
         ang->setGeometry(QRect(1350, 160, 71, 41));

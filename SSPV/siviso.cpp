@@ -212,8 +212,8 @@ void SIVISO::leerSocket()
             s = "OFF";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
         } else if(info == "runBTR"){
-            s = "EXIT";
-            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);//-----------------------------------------------------------Continuar aqui
+            //s = "EXIT";
+            //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);//-----------------------------------------------------------Continuar aqui
             puertoBTR = senderPort;
             s = "LONG";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
@@ -564,13 +564,13 @@ void SIVISO::on_escala_despliegue_tactico_valueChanged(double arg1)
 void SIVISO::on_gan_sen_valueChanged(int arg1)
 {
     mysignal->set_ganancia_sensor(arg1);
-
-    ui->view->appendPlainText("ganancia_sensor: ");
-    QString s = QString::number(arg1);
+    QString s = "G";
+    if(arg1<10){
+        s += "0";
+    }
+    s += QString::number(arg1);
     ui->view->appendPlainText(s);
-    //QByteArray ba ="GAIN "+s.toLatin1()+"\n";
-    //serialPortUSB->write("SET GAIN P\n");
-    //serialPortUSB->write(s.toLatin1()+"\n");
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
 }
 
 void SIVISO::on_it_valueChanged(int arg1)
