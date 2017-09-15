@@ -100,7 +100,7 @@ public:
     QRadioButton *origenManual;
     QRadioButton *origenAuto;
     QRadioButton *origenOmni;
-    QPushButton *btOpenPort;
+    QPushButton *enlazar;
     QPushButton *lf;
     QPushButton *btr;
     QPushButton *ppi;
@@ -438,9 +438,9 @@ public:
         origenOmni->setObjectName(QStringLiteral("origenOmni"));
         origenOmni->setGeometry(QRect(10, 30, 121, 22));
         origenOmni->setFont(font3);
-        btOpenPort = new QPushButton(BarraHerramientas);
-        btOpenPort->setObjectName(QStringLiteral("btOpenPort"));
-        btOpenPort->setGeometry(QRect(1190, 110, 71, 41));
+        enlazar = new QPushButton(BarraHerramientas);
+        enlazar->setObjectName(QStringLiteral("enlazar"));
+        enlazar->setGeometry(QRect(1190, 110, 71, 41));
         lf = new QPushButton(BarraHerramientas);
         lf->setObjectName(QStringLiteral("lf"));
         lf->setGeometry(QRect(1270, 110, 61, 41));
@@ -744,7 +744,7 @@ public:
         origenManual->setText(QApplication::translate("siviso", "Manual", 0));
         origenAuto->setText(QApplication::translate("siviso", "Automatico", 0));
         origenOmni->setText(QApplication::translate("siviso", "Omnidireccional", 0));
-        btOpenPort->setText(QApplication::translate("siviso", "Enlazar", 0));
+        enlazar->setText(QApplication::translate("siviso", "Enlazar", 0));
         lf->setText(QApplication::translate("siviso", "LF", 0));
         btr->setText(QApplication::translate("siviso", "BTR", 0));
         ppi->setText(QApplication::translate("siviso", "PPI", 0));

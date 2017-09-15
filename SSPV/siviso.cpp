@@ -212,12 +212,12 @@ void SIVISO::leerSocket()
             s = "OFF";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
         } else if(info == "runBTR"){
-            //s = "EXIT";
-            //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);//-----------------------------------------------------------Continuar aqui
+            s = "EXIT";
+            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);//-----------------------------------------------------------Continuar aqui
             puertoBTR = senderPort;
             s = "LONG";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
-            s = "OFF";
+            s = "RUN";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
         } else if(info == "runLF"){
             puertoLF = senderPort;
@@ -242,199 +242,6 @@ void SIVISO::leerSocket()
             //serialPortUSB->write("LOFAR\n");
         }
     }
-}
-
-void SIVISO::on_btOpenPort_clicked()
-{
-    /*serialPortDB9->setPortName("/dev/ttyS0");
-    if(serialPortDB9->open(QIODevice::ReadWrite))
-        ui->view->appendPlainText("Puerto serial abierto\n");
-        //qDebug("Puerto serial abierto\n");
-    else
-        ui->view->appendPlainText("Error de coexion con el puerto serial\n");
-        //qDebug("Error de coexion con el puerto serial\n");
-    serialPortDB9->setBaudRate(QSerialPort::Baud9600);
-    serialPortDB9->setDataBits(QSerialPort::Data8);
-    serialPortDB9->setStopBits(QSerialPort::OneStop);
-    serialPortDB9->setParity(QSerialPort::NoParity);
-    serialPortDB9->setFlowControl(QSerialPort::NoFlowControl);
-
-    serialPortUSB->setPortName("/dev/ttyUSB0");
-    if(serialPortUSB->open(QIODevice::ReadWrite)){
-        ui->view->appendPlainText("Puerto USB serial abierto\n");
-    }else{
-        ui->view->appendPlainText("Error de coexion con el puerto USB serial\n");
-    }
-    serialPortUSB->setBaudRate(QSerialPort::Baud9600);
-    serialPortUSB->setDataBits(QSerialPort::Data8);
-    serialPortUSB->setStopBits(QSerialPort::OneStop);
-    serialPortUSB->setParity(QSerialPort::NoParity);
-    serialPortUSB->setFlowControl(QSerialPort::NoFlowControl);
-
-    serialPortUSB->write("START COMMUNICATION P\n");
-    serialPortUSB->write("START COMMUNICATION A\n");*/
-}
-
-/*void siviso::leerSerialDB9()
-{
-    char buffer[101];
-    int nDatos;
-
-    nDatos = serialPortDB9->read(buffer,100);
-    buffer[nDatos] = '\0';
-    ui->textTestGrap->appendPlainText(buffer);
-
-}*/
-
-void SIVISO::leerSerialUSB()
-{
-    /*char buffer[101];
-    int nDatos;
-    numCatchSend++;
-    serialPortUSB->flush();
-    nDatos = serialPortUSB->read(buffer,100);
-
-    buffer[nDatos] = '\0';
-    ui->textTestGrap->appendPlainText(buffer);
-
-    QString str;
-    str=QString(buffer);
-    int n =str.size();
-    //ui->textTestGrap->appendPlainText(QString::number(n));
-
-
-    numCatchSend += n;
-    for(int x=0;x<str.size();x++){
-        if(str[x]=='#'){
-            bSensor = true;
-            catchSensor = "";
-            nSensor = 0;
-            tipoSensor = 9; //esta variable es para indicar que sensor se comunica, si activo "1" o pasivo "0", se inicializa en "9"
-        }
-        if(str[x]=='1'||str[x]=='2'||str[x]=='3'||str[x]=='4'||str[x]=='5'||str[x]=='6'||str[x]=='7'||str[x]=='8'||str[x]=='9'||str[x]=='0'||str[x]==','||str[x]==';'||str[x]=='.'||str[x]==':'||str[x]=='-'){
-            if(bSensor){
-                if(str[x]==','||str[x]==';'){
-                    switch(nSensor){
-                    case 0:
-                        if(catchSensor=="0"){
-                            ui->B0Nom->setText("SSPF");
-                            tipoSensor = 0;
-                        }else if (catchSensor=="1"){
-                            ui->B1Nom->setText("SSAF");
-                            tipoSensor = 1;
-                        }else{
-                            ui->B1Nom->setText("error");
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 1:
-                        if(tipoSensor == 0){
-                            ui->B0Or->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Or->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 2:
-                        if(tipoSensor == 0){
-                            ui->B0Pr->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Pr->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 3:
-                        if(tipoSensor == 0){
-                            ui->B0Temp->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Temp->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 4:
-                        if(tipoSensor == 0){
-                            ui->B0Time->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Time->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 5:
-                        if(tipoSensor == 0){
-                            ui->B0Lat->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Lat->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 6:
-                        if(tipoSensor == 0){
-                            ui->B0Long->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Long->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        nSensor++;
-                        break;
-                    case 7:
-                        if(tipoSensor == 0){
-                            ui->B0Carg->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Carg->setText(catchSensor);
-                        }
-                        nSensor++;
-                        if(catchSensor.toInt()<=20)
-                            ui->Alert->setText("ALERTA BATERIA BAJA");
-                        catchSensor = "";
-                        break;
-                    case 8:
-                        if(tipoSensor == 0){
-                            ui->B0Volt->setText(catchSensor);
-                        } else if(tipoSensor == 1){
-                            ui->B1Volt->setText(catchSensor);
-                        }
-                        catchSensor = "";
-                        break;
-                    }
-                } else{
-                    catchSensor += str[x];
-                }
-            } else{
-                if(str[x]==','||str[x]==';')
-                    nWords++;
-                catchSend += str[x];
-            }
-        }
-        if(str[x]==';'){
-            if(!bSensor){
-                ui->textTestGrap->appendPlainText("esto enviare: "+catchSend);
-                if(compGraf=="BTR"){
-                    if(nWords==longBTR||catchSend.size()>=(longBTR*2))
-                        udpsocket->writeDatagram(catchSend.toLatin1(),direccionApp,puertoBTR);
-                    else
-                        ui->Alert->setText("Error, Datos recividos para graficar BTR son incomprensibles");
-                }
-                if(compGraf=="LF"){
-                    if(nWords==longLF||catchSend.size()>=(longLF*2))
-                        udpsocket->writeDatagram(catchSend.toLatin1(),direccionApp,puertoLF);
-                    else
-                        ui->Alert->setText("Error, Datos recividos para graficar Lofar son incomprensibles");
-                }
-
-                numCatchSend = 0;
-
-                //ui->textTestGrap->appendPlainText(catchSend);
-                catchSend="";
-            }
-            nWords=0;
-        }
-    }*/
 }
 
 void SIVISO::on_tipo_norte_clicked()
@@ -474,8 +281,8 @@ void SIVISO::on_btr_clicked()
     s = "ON";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
     compGraf="BTR";
-    //s = "RP";
-    //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
+    /*s = "RP";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);*/
 }
 
 
@@ -967,7 +774,7 @@ void SIVISO::deshabilitado(bool value){
     ui->escala_ppi->setDisabled(value);
     ui->escala_desp->setDisabled(value);
     ui->gan_sen->setDisabled(value);
-    ui->btOpenPort->setDisabled(value);
+    ui->enlazar->setDisabled(value);
     ui->lf->setDisabled(value);
     ui->btr->setDisabled(value);
     ui->ppi->setDisabled(value);
@@ -983,4 +790,9 @@ void SIVISO::on_vol_dw_clicked()
 void SIVISO::on_vol_up_clicked()
 {
     proceso3->startDetached("amixer sset Master 5%+");
+}
+
+void SIVISO::on_enlazar_clicked()
+{
+
 }

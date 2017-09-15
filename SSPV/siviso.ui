@@ -1062,7 +1062,7 @@ Verdadero</string>
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="btOpenPort">
+    <widget class="QPushButton" name="enlazar">
      <property name="geometry">
       <rect>
        <x>1190</x>

@@ -65,12 +65,8 @@ public:
 
 private slots:
     void leerSocket();
-    //void leerSerialDB9();
-    void leerSerialUSB();
 
 private slots:
-
-    void on_btOpenPort_clicked();
 
     void on_tipo_norte_clicked();
 
@@ -155,6 +151,8 @@ private slots:
     void on_vol_dw_clicked();
 
     void on_vol_up_clicked();
+
+    void on_enlazar_clicked();
 
 private:
     Ui::siviso *ui;
