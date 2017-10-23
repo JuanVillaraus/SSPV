@@ -84,8 +84,8 @@ SIVISO::SIVISO(QWidget *parent) :
     ui->origenSensor->setDisabled(true);
     ui->origenBlanco->setDisabled(true);
     ui->origenAuto->setDisabled(true);
-    ui->rec->setDisabled(true);
-    ui->play->setDisabled(true);
+    //ui->rec->setDisabled(true);
+    //ui->play->setDisabled(true);
     ui->et_blancos->setDisabled(true);
     ui->clas_blancos->setDisabled(true);
     ui->edo_mar->setDisabled(true);
@@ -113,14 +113,14 @@ SIVISO::SIVISO(QWidget *parent) :
     }
     file2.close();
 
-    /*thread()->sleep(1);
+    thread()->sleep(1);
     proceso5->startDetached("java -jar ConexionPV.jar");
     thread()->sleep(1);
     proceso1->startDetached("java -jar Lofar.jar");
     thread()->sleep(1);
     proceso2->startDetached("java -jar BTR.jar");
     thread()->sleep(1);
-    proceso3->startDetached("java -jar PPI.jar");
+    /*proceso3->startDetached("java -jar PPI.jar");
     thread()->sleep(1);*/
 
 
@@ -206,29 +206,29 @@ void SIVISO::leerSocket()
 
         QString s;
         if(info == "runPPI"){
+            s = "EXIT";
+            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
             puertoPPI = senderPort;
-            //s = "LONG";
-            //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
-            s = "OFF";
+            s = "RUN";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
         } else if(info == "runBTR"){
             s = "EXIT";
-            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);//-----------------------------------------------------------Continuar aqui
-            puertoBTR = senderPort;
-            s = "LONG";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
+            puertoBTR = senderPort;
             s = "RUN";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
         } else if(info == "runLF"){
-            puertoLF = senderPort;
-            s = "LONG";
+            s = "EXIT";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
-            s = "OFF";
+            puertoLF = senderPort;
+            s = "RUN";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
         } else if(info == "runConxPV"){
-            //s = "EXIT";
-            //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
+            s = "EXIT";
+            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
             puertoComPV = senderPort;
+            s = "RUN";
+            udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
         } else if(info == "runREC"){
             puertoREC = senderPort;
         } else if(info == "PPI OK"){
@@ -270,6 +270,12 @@ void SIVISO::on_lf_clicked()
     compGraf="LF";
     s = "RP";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
+
+    ui->origenManual->setChecked(true);
+    ui->nHidrof->setDisabled(false);
+    ui->dial->setDisabled(false);
+    ui->ang->setVisible(true);
+    ui->label_ang->setVisible(true);
 }
 
 void SIVISO::on_btr_clicked()
@@ -392,32 +398,29 @@ void SIVISO::on_it_valueChanged(int arg1)
 void SIVISO::on_rec_clicked()
 {
     QString s;
-    if(bRec){
-        bRec=false;
-        ui->rec->setText("Stop");
-        s = "REC_ON";
-        udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoREC);
+    s = "REC";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
+    deshabilitado(true);
+    s = "OFF";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
+    if(compGraf=="BTR"){
+        compGraf = "BAUDIO";
+    }else if(compGraf=="LF"){
+        compGraf = "LAUDIO";
+    }else if(compGraf=="PPI"){
+        compGraf = "PAUDIO";
     }else{
-        bRec=true;
-        ui->rec->setText("Rec");
-        s = "REC_OFF";
-        udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoREC);
+        compGraf = "AUDIO";
     }
 }
 
 void SIVISO::on_play_clicked()
 {
-    if(bPlay){
-        bPlay=false;
-        ui->play->setText("Stop");
-        proceso3->startDetached("pactl load-module module-loopback");
-        //proceso3->startDetached("java -jar recSound.jar");
-        //QSound::play("2016-09-14_14:27:16.wav");
-    }else{
-        bPlay=true;
-        ui->play->setText("Play");
-        proceso3->startDetached("pactl unload-module module-loopback");
-    }
+    QString s;
+    s = "PLAY";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
 }
 
 void SIVISO::on_toolButton_clicked()
@@ -620,6 +623,9 @@ void SIVISO::on_dial_valueChanged(int value)
         ui->dial->setValue(value);
     }*/
     ui->ang->setValue(value);
+    /*QString s;
+    s = "EXIT";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);*/
 }
 
 void SIVISO::on_ang_valueChanged(int arg1)

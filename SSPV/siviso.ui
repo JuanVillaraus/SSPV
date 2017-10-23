@@ -1085,7 +1085,7 @@ Verdadero</string>
       </rect>
      </property>
      <property name="text">
-      <string>LF</string>
+      <string>LOFAR</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btr">

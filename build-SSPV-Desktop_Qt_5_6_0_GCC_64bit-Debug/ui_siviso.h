@@ -745,7 +745,7 @@ public:
         origenAuto->setText(QApplication::translate("siviso", "Automatico", 0));
         origenOmni->setText(QApplication::translate("siviso", "Omnidireccional", 0));
         enlazar->setText(QApplication::translate("siviso", "Enlazar", 0));
-        lf->setText(QApplication::translate("siviso", "LF", 0));
+        lf->setText(QApplication::translate("siviso", "LOFAR", 0));
         btr->setText(QApplication::translate("siviso", "BTR", 0));
         ppi->setText(QApplication::translate("siviso", "PPI", 0));
         label_ang->setText(QApplication::translate("siviso", "<html><head/><body><p align=\"center\">Marcaci\303\263n</p></body></html>", 0));
