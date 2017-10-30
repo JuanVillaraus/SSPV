@@ -24,6 +24,8 @@ SIVISO::SIVISO(QWidget *parent) :
     catchSend = "";
     compGraf = "";
 
+
+
     udpsocket = new QUdpSocket(this);
     //udpsocket->bind(localdir,puertolocal);
     udpsocket->bind(QHostAddress::LocalHost, puertolocal);
@@ -94,7 +96,6 @@ SIVISO::SIVISO(QWidget *parent) :
     ui->escala_ppi->setDisabled(true);
     ui->escala_desp->setDisabled(true);
 
-
     QFile file1("resource/colorUp.txt");
     if(file1.open(QIODevice::WriteOnly)){
         QTextStream stream(&file1);
@@ -103,6 +104,7 @@ SIVISO::SIVISO(QWidget *parent) :
         qDebug();
     }
     file1.close();
+    colorUp = 255;
 
     QFile file2("resource/colorDw.txt");
     if(file2.open(QIODevice::WriteOnly)){
@@ -112,6 +114,7 @@ SIVISO::SIVISO(QWidget *parent) :
         qDebug();
     }
     file2.close();
+    colorDw = 0;
 
     thread()->sleep(1);
     proceso5->startDetached("java -jar ConexionPV.jar");
@@ -122,6 +125,8 @@ SIVISO::SIVISO(QWidget *parent) :
     thread()->sleep(1);
     /*proceso3->startDetached("java -jar PPI.jar");
     thread()->sleep(1);*/
+
+    proceso3->startDetached("sudo ethtool -s eth0 speed 100 duplex  full");
 
 
 
