@@ -116,7 +116,7 @@ SIVISO::SIVISO(QWidget *parent) :
     file2.close();
     colorDw = 0;
 
-    thread()->sleep(1);
+    /*thread()->sleep(1);
     proceso5->startDetached("java -jar ConexionPV.jar");
     thread()->sleep(1);
     proceso1->startDetached("java -jar Lofar.jar");
@@ -235,8 +235,10 @@ void SIVISO::leerSocket()
             s = "RUN";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
         } else if(info == "runREC"){
-            puertoREC = senderPort;
+            deshabilitado(false);
         } else if(info == "PPI OK"){
+            deshabilitado(false);
+        } else if(info == "PLAY OK"){
             deshabilitado(false);
         } else if(puertoSSF == senderPort){
              udpsocket->writeDatagram(info.toLatin1(),direccionApp,puertoBTR);
@@ -403,9 +405,7 @@ void SIVISO::on_it_valueChanged(int arg1)
 void SIVISO::on_rec_clicked()
 {
     QString s;
-    s = "REC";
-    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
-    deshabilitado(true);
+
     s = "OFF";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
@@ -419,6 +419,9 @@ void SIVISO::on_rec_clicked()
     }else{
         compGraf = "AUDIO";
     }
+    s = "REC";
+    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoComPV);
+    deshabilitado(true);
 }
 
 void SIVISO::on_play_clicked()
@@ -805,5 +808,11 @@ void SIVISO::on_vol_up_clicked()
 
 void SIVISO::on_enlazar_clicked()
 {
-
+    thread()->sleep(1);
+    proceso5->startDetached("java -jar ConexionPV.jar");
+    thread()->sleep(1);
+    proceso1->startDetached("java -jar Lofar.jar");
+    thread()->sleep(1);
+    proceso2->startDetached("java -jar BTR.jar");
+    thread()->sleep(1);
 }
