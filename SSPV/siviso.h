@@ -65,6 +65,9 @@ public:
 
 private slots:
     void leerSocket();
+    void leerSensor1();
+    void leerSensor2();
+
 
 private slots:
 
@@ -158,7 +161,9 @@ private:
     Ui::siviso *ui;
 
     QUdpSocket *udpsocket;
-    QHostAddress direccionSSF;
+    QUdpSocket *sensorGyroSocket;
+    QUdpSocket *sensorGPSSocket;
+    QHostAddress direccionSPV;
     QHostAddress direccionApp;
     quint16 puertoSSF;
     quint16 puertoPPI;

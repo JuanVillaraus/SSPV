@@ -27,20 +27,21 @@ SIVISO::SIVISO(QWidget *parent) :
 
 
     udpsocket = new QUdpSocket(this);
-    //udpsocket->bind(localdir,puertolocal);
+    sensorGyroSocket = new QUdpSocket(this);
+    sensorGPSSocket = new QUdpSocket(this);
     udpsocket->bind(QHostAddress::LocalHost, puertolocal);
-    //serialPortDB9 = new QSerialPort();
-    //serialPortUSB = new QSerialPort();
     connect(udpsocket,SIGNAL(readyRead()),this,SLOT(leerSocket()));
-    //connect(serialPortDB9, SIGNAL(readyRead()),this,SLOT(leerSerialDB9()));
-    //connect(serialPortUSB, SIGNAL(readyRead()),this,SLOT(leerSerialUSB()));
 
-    direccionSSF = "192.168.1.177";                   //direccion del SPP
+
+    direccionSPV = "192.168.1.11";
     puertoSSF = 8888;                                 //puerto del SPP
     //direccionApp = "192.168.1.178";                   //direccion que usaran las aplicaciones
     direccionApp = "127.0.0.1";                   //direccion que usaran las aplicaciones
-    //udpsocket->writeDatagram(ui->view->text().toLatin1(),direccionPar,puertoPar); //visualiza la direcion IP y puerto del que envia
-    //pSocket->connectToHost("192.168.1.10",6001);
+    /*sensorGyroSocket->bind(4001, QUdpSockepaquetet::ShareAddress);
+    connect(sensorGyroSocket,SIGNAL(readyRead()),this,SLOT(leerSensor1()));
+    sensorGPSSocket->bind(4009, QUdpSocket::ShareAddress);
+    connect(sensorGyroSocket,SIGNAL(readyRead()),this,SLOT(leerSensor2()));*/
+
 
     ui->frecuencia->setValue(mysignal->get_frec());
     ui->bw->setValue(mysignal->get_bw());
@@ -123,10 +124,11 @@ SIVISO::SIVISO(QWidget *parent) :
     thread()->sleep(1);
     proceso2->startDetached("java -jar BTR.jar");
     thread()->sleep(1);
-    /*proceso3->startDetached("java -jar PPI.jar");
+    proceso3->startDetached("java -jar PPI.jar");
     thread()->sleep(1);*/
 
-    proceso3->startDetached("sudo ethtool -s eth0 speed 100 duplex  full");
+    //proceso3->startDetached("sudo ethtool -s enp59s0 autoneg off");
+    //proceso3->startDetached("sudo ethtool -s eth0 speed 100 duplex  full");
 
 
 
@@ -210,6 +212,7 @@ void SIVISO::leerSocket()
         //s = " ";
 
         QString s;
+        QString sensor = "";
         if(info == "runPPI"){
             s = "EXIT";
             udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
@@ -247,8 +250,994 @@ void SIVISO::leerSocket()
             //serialPortUSB->write("BTR\n");
         } else if(info == "LOFAR"){
             //serialPortUSB->write("LOFAR\n");
+        } else if(info[0] == 'G'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->ori->setText(sensor);
+        } else if(info[0] == 'P'){
+            for(int i=2;i<info.length();i++){
+                sensor+=info[i];
+            }
+            if(info[1]== 't'){
+                ui->lat->setText(sensor);
+            }
+            if(info[1]== 'g'){
+                ui->log->setText(sensor);
+            }
+            if(info[1] == 'i'){
+                ui->view->appendHtml("      Pitch: "+sensor);
+                ui->Pitch->setText(sensor);
+            }
+            if(info[1] == 'r'){
+                ui->prof->setText(sensor);
+            }
+        } else if(info[0] == 'A'){
+            for(int i=2;i<info.length();i++){
+                sensor+=info[i];
+            }
+            if(info[1]== 'a'){
+                ui->dirV->setText(sensor);
+            }
+            if(info[1]== 'v'){
+                ui->velV->setText(sensor);
+            }
+        } else if(info[0] == 'E'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->profundidad->setText(sensor);
+        } else if(info[0] == 'T'){
+            if(info[1] == 'i'){
+                for(int i=2;i<info.length();i++){
+                    sensor+=info[i];
+                }
+                ui->TempIn->setText(sensor);
+            }else{
+                for(int i=1;i<info.length();i++){
+                    sensor+=info[i];
+                }
+                ui->temp->setText(sensor);
+            }
+        } else if(info[0] == 'H'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->Hum->setText(sensor);
+        } else if(info[0] == 'Y'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->Yaw->setText(sensor);
+        } else if(info[0] == 'R'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->Roll->setText(sensor);
+        } else if(info[0] == 'S'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->Sal->setText(sensor);
+        } else if(info[0] == 'V'){
+            for(int i=1;i<info.length();i++){
+                sensor+=info[i];
+            }
+            ui->velSound->setText(sensor);
         }
+
     }
+}
+
+void SIVISO::leerSensor1()
+{
+    /*while(sensorGyroSocket->hasPendingDatagrams())
+    {
+        QByteArray datagram;
+        datagram.resize(sensorGyroSocket->pendingDatagramSize());
+        QHostAddress senderSensor;
+        quint16 senderPortSensor;
+        sensorGyroSocket->readDatagram(datagram.data(),datagram.size(), &senderSensor, &senderPortSensor);
+        QString paqInfo = datagram.data();
+        ui->textTestGrap->appendPlainText(" port-> " + QString("%1").arg(senderPortSensor));
+        ui->textTestGrap->appendPlainText("sensores: "+paqInfo);
+
+        QString s;
+        QString info="";
+        QString sLat;
+        QString sLog;
+        QString segundos;
+        double lat;
+        double log;
+        int n = 0;
+        int c = 0;
+        for(int i=0;i<paqInfo.length();i++){
+            if(paqInfo[i]=='$'){
+                //ui->view->appendPlainText("$$$$");
+                if(info!=""){
+                    if(info[0] == '$'){
+                        //switch(info[1].toLatin1()){
+                        if(info[1].toLatin1()=='I'){
+                        /*case 'A':
+                            if(info[2]=='I'){
+                                ui->view->appendPlainText("AIS: "+info);
+                            }
+                            break;
+                        case 'G':
+                            //ui->view->appendPlainText("GGGG");
+                            if(info[2]=='P'){
+                                ui->view->appendPlainText("GPS: ");
+                                if(info[3]=='G'){
+                                    if(info[4]=='G'){
+                                        if(info[5]=='A'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     Latitude: "+s);
+                                                        sLat="";
+                                                        c=0;
+                                                        sLat+=s[c];
+                                                        c++;
+                                                        sLat+=s[c];
+                                                        sLat+="°";
+                                                        c++;
+                                                        sLat+=s[c];
+                                                        c++;
+                                                        sLat+=s[c];
+                                                        sLat+="°";
+                                                        segundos="";
+                                                        c++;
+                                                        for(;c<s.length();c++){
+                                                            segundos+=s[c];
+                                                        }
+                                                        ui->view->appendPlainText(segundos);
+                                                        lat=segundos.toDouble();
+                                                        lat*=60;
+                                                        sLat+=QString::number(static_cast<int>(lat));
+                                                        sLat+="°";
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        if(s[0]=='N'){
+                                                            ui->view->appendPlainText("     North");
+                                                            sLat+=" N";
+                                                            ui->lat->setText(sLat);
+                                                        }else if(s[0]=='S'){
+                                                            ui->view->appendPlainText("     South");
+                                                            sLat+=" S";
+                                                            ui->lat->setText(sLat);
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        ui->view->appendPlainText("     Longitude: "+s);
+                                                        sLog="";
+                                                        c=1;
+                                                        sLog+=s[c];
+                                                        c++;
+                                                        sLog+=s[c];
+                                                        sLog+="°";
+                                                        c++;
+                                                        sLog+=s[c];
+                                                        c++;
+                                                        sLog+=s[c];
+                                                        sLog+="°";
+                                                        segundos="";
+                                                        c++;
+                                                        for(;c<s.length();c++){
+                                                            segundos+=s[c];
+                                                        }
+                                                        ui->view->appendPlainText(segundos);
+                                                        log=segundos.toDouble();
+                                                        log*=60;
+                                                        sLog+=QString::number(static_cast<int>(log));
+                                                        sLog+="°";
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     East");
+                                                            sLog+=" E";
+                                                            ui->log->setText(sLog);
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     West");
+                                                            sLog+=" W";
+                                                            ui->log->setText(sLog);
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }else if(info[4]=='L'){
+                                        if(info[5]=='L'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Latitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        if(s[0]=='N'){
+                                                            ui->view->appendPlainText("     North");
+                                                        }else if(s[0]=='S'){
+                                                            ui->view->appendPlainText("     South");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Longitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     East");
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     West");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(info[3]=='R'){
+                                    if(info[4]=='M'){
+                                        if(info[5]=='C'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Latitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        if(s[0]=='N'){
+                                                            ui->view->appendPlainText("     North");
+                                                        }else if(s[0]=='S'){
+                                                            ui->view->appendPlainText("     South");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     Longitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 6:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     East");
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     West");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    default:
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(info[3]=='V'){
+                                    if(info[4]=='T'){
+                                        if(info[5]=='G'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Track Degrees: "+s+" True");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Track Degrees: "+s+" Magnetic");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     Speed: "+s+" Knots");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 7:
+                                                        ui->view->appendPlainText("     Speed: "+s+" Km*hrs");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    default:
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(info[3]=='Z'){
+                                    if(info[4]=='D'){
+                                        if(info[5]=='A'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     local zone hous: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     years: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        ui->view->appendPlainText("     month: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     day: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        /*case 'H':
+                            if(info[2]=='C'){
+                                ui->view->appendPlainText("Heading-Magnetic Compass:");
+                                if(info[3]=='H'){
+                                    if(info[4]=='D'){
+                                        if(info[5]=='G'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Sensor: "+s+" degrees");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     Deviation: "+s+" degrees");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     Easterly");
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     Westerly");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        ui->view->appendPlainText("     Variation: "+s+" degrees");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     Easterly "+s);
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     Westerly "+s);
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }else if(info[5]=='M'||info[5]=='T'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    if(info[x+1]=='M'){
+                                                        ui->view->appendPlainText("     Heading Degrees: "+s+" magnetic");
+                                                    }else if(info[x+1]=='T'){
+                                                        ui->view->appendPlainText("     Heading Degrees: "+s+" true");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        //case 'I':
+                            if(info[2]=='N'){
+                                ui->view->appendPlainText("Gyro: ");
+                                if(info[3]=='H'){
+                                    if(info[4]=='D'){
+                                        if(info[5]=='T'){
+                                            s="";
+                                            n=7;
+                                            while(info[n]!=','){
+                                                s+=info[n];
+                                                n++;
+                                            }
+                                            n++;
+                                            ui->view->appendPlainText("     Degrees: "+s);
+                                            if(info[n]=='T'){
+                                                ui->view->appendPlainText("     True");
+                                                ui->ori->setText(s+" T");
+                                            }else{
+                                                if(info[n]=='M'){
+                                                    ui->view->appendPlainText("     Magnetic");
+                                                    ui->ori->setText(s+" M");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        case 'S':
+                            if(info[2]=='D'){
+                                ui->view->appendPlainText("Sound Deeper: ");
+                                if(info[3]=='D'){
+                                    if(info[4]=='B'){
+                                        if(info[5]=='T'||info[5]=='S'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        if(s!=""){
+                                                            ui->view->appendPlainText("     Depth: "+s+" meters");
+                                                            ui->profundidad->setText(s+" meters");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        if(s!=""){
+                                                            ui->view->appendPlainText("     Depth: "+s+" feet");
+                                                            ui->profundidad->setText(s+" feet");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        if(s!=""){
+                                                            ui->view->appendPlainText("     Depth: "+s+" Fathoms");
+                                                            ui->profundidad->setText(s+" Fathoms");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    default:
+                                                        s = "";
+                                                        n++;
+                                                    }
+                                                }
+                                            }
+                                            ui->view->appendPlainText("     "+s);
+                                        }
+                                    }else if(info[4]=='P'){
+                                        if(info[5]=='T'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Depth: "+s+" meters");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     Offset: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        case 'W':
+                            if(info[2]=='I'){
+                                ui->view->appendPlainText("Anemometer: "+info);
+                                if(info[3]=='M'){
+                                    if(info[4]=='W'){
+                                        if(info[5]=='V'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Wind Angle: "+s+" degrees");
+                                                        ui->dirV->setText(s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        if(s[0]=='R'){
+                                                            ui->view->appendPlainText("     Relative");
+                                                            ui->dirV_2->setText("R");
+                                                        }else if(s[0]=='T'){
+                                                            ui->view->appendPlainText("     True");
+                                                            ui->dirV_2->setText("T");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Wind Speed: "+s);
+                                                        ui->velV->setText(s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        if(s[0]=='K'){
+                                                            ui->velV_2->setText("Km/h");
+                                                        }else if(s[0]=='M'){
+                                                            ui->velV_2->setText("m/s");
+                                                        }else if(s[0]=='N'){
+                                                            ui->velV_2->setText("Knots");
+                                                        }else{
+                                                            ui->velV_2->setText("?");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        case 'R':
+                            if(info[2]=='A'){
+                                ui->view->appendPlainText("Radar: "+info);
+                            }
+                            break;
+                        case 'V':
+                            if(info[2]=='D'){
+                                ui->view->appendPlainText("Sound Deeper: ");
+                                if(info[3]=='D'){
+                                    if(info[4]=='P'){
+                                        if(info[5]=='T'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Depth: "+s+" meters");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     Offset: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                //info=paqInfo[i];
+                info="$";
+            }else{
+                info+=paqInfo[i];
+            }
+        }
+
+    }*/
+}
+
+void SIVISO::leerSensor2()
+{
+    /*while(sensorGPSSocket->hasPendingDatagrams())
+    {
+        QByteArray datagram;
+        datagram.resize(sensorGyroSocket->pendingDatagramSize());
+        QHostAddress senderSensor;
+        quint16 senderPortSensor;
+        sensorGyroSocket->readDatagram(datagram.data(),datagram.size(), &senderSensor, &senderPortSensor);
+        QString paqInfo = datagram.data();
+        ui->textTestGrap->appendPlainText(" port-> " + QString("%1").arg(senderPortSensor));
+        ui->textTestGrap->appendPlainText("sensores: "+paqInfo);
+
+        QString s;
+        QString info="";
+        QString sLat;
+        QString sLog;
+        QString segundos;
+        double lat;
+        double log;
+        int n = 0;
+        int c = 0;
+        for(int i=0;i<paqInfo.length();i++){
+            if(paqInfo[i]=='$'){
+                //ui->view->appendPlainText("$$$$");
+                if(info!=""){
+                    if(info[0] == '$'){
+                        if(info[1].toLatin1()=='G'){
+                            //ui->view->appendPlainText("GGGG");
+                            if(info[2]=='P'){
+                                ui->view->appendPlainText("GPS: ");
+                                if(info[3]=='G'){
+                                    if(info[4]=='G'){
+                                        if(info[5]=='A'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     Latitude: "+s);
+                                                        sLat="";
+                                                        c=0;
+                                                        sLat+=s[c];
+                                                        c++;
+                                                        sLat+=s[c];
+                                                        sLat+="°";
+                                                        c++;
+                                                        sLat+=s[c];
+                                                        c++;
+                                                        sLat+=s[c];
+                                                        sLat+="°";
+                                                        segundos="";
+                                                        c++;
+                                                        for(;c<s.length();c++){
+                                                            segundos+=s[c];
+                                                        }
+                                                        ui->view->appendPlainText(segundos);
+                                                        lat=segundos.toDouble();
+                                                        lat*=60;
+                                                        sLat+=QString::number(static_cast<int>(lat));
+                                                        sLat+="°";
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        if(s[0]=='N'){
+                                                            ui->view->appendPlainText("     North");
+                                                            sLat+=" N";
+                                                            ui->lat->setText(sLat);
+                                                        }else if(s[0]=='S'){
+                                                            ui->view->appendPlainText("     South");
+                                                            sLat+=" S";
+                                                            ui->lat->setText(sLat);
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        ui->view->appendPlainText("     Longitude: "+s);
+                                                        sLog="";
+                                                        c=1;
+                                                        sLog+=s[c];
+                                                        c++;
+                                                        sLog+=s[c];
+                                                        sLog+="°";
+                                                        c++;
+                                                        sLog+=s[c];
+                                                        c++;
+                                                        sLog+=s[c];
+                                                        sLog+="°";
+                                                        segundos="";
+                                                        c++;
+                                                        for(;c<s.length();c++){
+                                                            segundos+=s[c];
+                                                        }
+                                                        ui->view->appendPlainText(segundos);
+                                                        log=segundos.toDouble();
+                                                        log*=60;
+                                                        sLog+=QString::number(static_cast<int>(log));
+                                                        sLog+="°";
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     East");
+                                                            sLog+=" E";
+                                                            ui->log->setText(sLog);
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     West");
+                                                            sLog+=" W";
+                                                            ui->log->setText(sLog);
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }else if(info[4]=='L'){
+                                        if(info[5]=='L'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Latitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        if(s[0]=='N'){
+                                                            ui->view->appendPlainText("     North");
+                                                        }else if(s[0]=='S'){
+                                                            ui->view->appendPlainText("     South");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Longitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     East");
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     West");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(info[3]=='R'){
+                                    if(info[4]=='M'){
+                                        if(info[5]=='C'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Latitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        if(s[0]=='N'){
+                                                            ui->view->appendPlainText("     North");
+                                                        }else if(s[0]=='S'){
+                                                            ui->view->appendPlainText("     South");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     Longitude: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 6:
+                                                        if(s[0]=='E'){
+                                                            ui->view->appendPlainText("     East");
+                                                        }else if(s[0]=='W'){
+                                                            ui->view->appendPlainText("     West");
+                                                        }
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    default:
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(info[3]=='V'){
+                                    if(info[4]=='T'){
+                                        if(info[5]=='G'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     Track Degrees: "+s+" True");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     Track Degrees: "+s+" Magnetic");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     Speed: "+s+" Knots");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 7:
+                                                        ui->view->appendPlainText("     Speed: "+s+" Km*hrs");
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    default:
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(info[3]=='Z'){
+                                    if(info[4]=='D'){
+                                        if(info[5]=='A'){
+                                            s = "";
+                                            n = 1;
+                                            for(int x=7;x<info.size();x++){
+                                                if(info[x]!=','&&info[x]!='*'){
+                                                    s += info[x];
+                                                }else{
+                                                    switch(n){
+                                                    case 1:
+                                                        ui->view->appendPlainText("     time: "+s[0]+s[1]+":"+s[2]+s[3]+":"+s[4]+s[5]);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 2:
+                                                        ui->view->appendPlainText("     local zone hous: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 3:
+                                                        ui->view->appendPlainText("     years: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 4:
+                                                        ui->view->appendPlainText("     month: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    case 5:
+                                                        ui->view->appendPlainText("     day: "+s);
+                                                        s = "";
+                                                        n++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //info=paqInfo[i];
+                info="$";
+            }else{
+                info+=paqInfo[i];
+            }
+        }
+
+    }*/
 }
 
 void SIVISO::on_tipo_norte_clicked()
@@ -563,7 +1552,7 @@ void SIVISO::on_nHidrof_valueChanged(int arg1)
 
 void SIVISO::on_cw_clicked()
 {
-    deshabilitado(true);
+    //deshabilitado(true);
     QString s;
     s = "OFF";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
@@ -597,7 +1586,9 @@ void SIVISO::on_sensor0_clicked()
 
 void SIVISO::on_sensor1_clicked()
 {
-    //serialPortUSB->write("SENSORES A\n");
+    /*QString s;
+    s = "HW";
+    sensorGyroSocket->writeDatagram(s.toLatin1(),direccionSSF,4002);*/
 }
 
 void SIVISO::on_closeJars_clicked()
@@ -615,12 +1606,12 @@ void SIVISO::on_openJars_clicked()
     s = "EXIT";
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoBTR);
     udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoLF);
-    udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
+    //udpsocket->writeDatagram(s.toLatin1(),direccionApp,puertoPPI);
 
-    proceso1->startDetached("java -jar Lofar.jar");
-    proceso2->startDetached("java -jar BTR.jar");
-    proceso3->startDetached("java -jar PPI.jar");
-    //proceso5->startDetached("java -jar ConexionPV.jar");
+    //proceso1->startDetached("java -jar Lofar.jar");
+    //proceso2->startDetached("java -jar BTR.jar");
+    //proceso3->startDetached("java -jar PPI.jar");
+    proceso5->startDetached("java -jar ConexionPV.jar");
 }
 
 
@@ -794,12 +1785,10 @@ void SIVISO::deshabilitado(bool value){
     ui->ppi->setDisabled(value);
 }
 
-
 void SIVISO::on_vol_dw_clicked()
 {
     proceso3->startDetached("amixer sset Master 5%-");
 }
-
 
 void SIVISO::on_vol_up_clicked()
 {
