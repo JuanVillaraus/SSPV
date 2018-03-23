@@ -118,14 +118,14 @@ SIVISO::SIVISO(QWidget *parent) :
     colorDw = 0;
 
     /*thread()->sleep(1);
-    proceso5->startDetached("java -jar ConexionPV.jar");
+    proceso5->startDetached("java -jar ConexionPV.jar");*/
     thread()->sleep(1);
     proceso1->startDetached("java -jar Lofar.jar");
     thread()->sleep(1);
     proceso2->startDetached("java -jar BTR.jar");
     thread()->sleep(1);
     proceso3->startDetached("java -jar PPI.jar");
-    thread()->sleep(1);*/
+    thread()->sleep(1);
 
     //proceso3->startDetached("sudo ethtool -s enp59s0 autoneg off");
     //proceso3->startDetached("sudo ethtool -s eth0 speed 100 duplex  full");
