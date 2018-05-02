@@ -157,6 +157,10 @@ private slots:
 
     void on_enlazar_clicked();
 
+    void on_pushButton_clicked();
+
+    void on_cln_clicked();
+
 private:
     Ui::siviso *ui;
 
